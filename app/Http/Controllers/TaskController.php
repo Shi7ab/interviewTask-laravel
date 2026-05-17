@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\Auth;
 class TaskController extends Controller
 {
     //
-    public function create(){
+    public function create(Request $request){
         $task = Task::create([
-            'title' => 'Task 1',
-            'description' => 'This is the first task',
-            'status' => 'pending',
-            'priority' => 'medium',
-            'user_id' => Auth::id(), 
+            'title' => $request->title,
+            'description' => $request->description,
+            'status' => $request->status,
+            'priority' => $request->priority,
+            'user_id' => auth()->id()
         ]);
 
-       // event(new TaskCreated($task));
+        event(new TaskCreated($task));
 
         return response()->json([
             'message' => 'Task created successfully',

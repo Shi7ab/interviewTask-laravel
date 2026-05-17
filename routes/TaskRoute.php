@@ -3,7 +3,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\AuthController;
 
-Route::middleware(['throttle:5,1'])->group(function () {
+Route::middleware(['throttle:5,1','auth:sanctum'])->group(function () {
 
     Route::post('/tasks', [TaskController::class, 'create']);
 });
