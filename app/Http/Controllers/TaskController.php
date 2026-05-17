@@ -3,23 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Task;
-use App\Events\TaskCreated;
-use Illuminate\Support\Facades\Auth;
+use App\Services\TaskService;
 
 class TaskController extends Controller
 {
-    //
-    public function create(Request $request){
-        $task = Task::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'status' => $request->status,
-            'priority' => $request->priority,
-            'user_id' => auth()->id()
-        ]);
+    protected TaskService $taskService;
 
-        event(new TaskCreated($task));
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
+
+    public function create(Request $request)
+    {
+        $task = $this->taskService->create($request->all());
 
         return response()->json([
             'message' => 'Task created successfully',
@@ -27,40 +24,46 @@ class TaskController extends Controller
         ], 201);
     }
 
-    public function readAll(){
-        // $tasks = Task::paginate(10);
-        // at this point we can use cache to store the tasks for 60 seconds
-        $tasks = Cache::remember('tasks', 60, function () {
-            // return Task::all();
-            return Task::paginate(10);
-        });
+    public function readAll()
+    {
+        $tasks = $this->taskService->getAll();
 
         return response()->json(['tasks' => $tasks], 200);
     }
 
-    public function read($id){
-        $task = Task::find($id);
-        if(!$task){
+    public function read($id)
+    {
+        $task = $this->taskService->getById($id);
+
+        if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
+
         return response()->json(['task' => $task], 200);
     }
 
-    public function update(Request $request, $id){
-        $task = Task::find($id);
-        if(!$task){
+    public function update(Request $request, $id)
+    {
+        $task = $this->taskService->update($id, $request->all());
+
+        if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
-        $task->update($request->all());
-        return response()->json(['message' => 'Task updated successfully', 'task' => $task], 200);
+
+        return response()->json([
+            'message' => 'Task updated successfully',
+            'task' => $task
+        ], 200);
     }
 
-    public function delete($id){
-        $task = Task::find($id);
-        if(!$task){
+    public function delete($id)
+    {
+        $deleted = $this->taskService->delete($id);
+
+        if (!$deleted) {
             return response()->json(['message' => 'Task not found'], 404);
         }
-        $task->delete();
+
         return response()->json(['message' => 'Task deleted successfully'], 200);
     }
 }
