@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use app\Models\User;
-use Http\Requests\validationRole;
+use App\Http\Requests\ValidationRole;
+use App\Notifications\EmailNotification;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -24,24 +26,34 @@ class AuthController extends Controller
             'password' => bcrypt($validatedData['password']),
         ]);
 
+       // $user->notify(new EmailNotification($user->email));
         return response()->json(['message' => 'User registered successfully'], 201);
     }
-    public function login(Request $request, validationRole $validationRole)
+
+    public function login(Request $request)
     {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-        try{
-
-        $credentials = $request->validate((new validationRole())->rules());
-        $token = $request->user()->createToken('auth_token')->plainTextToken;
-       if (auth()->attempt($credentials)) {
-            return response()->json(['message' => 'Login successful', 'token' => $token], 200);
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
         }
 
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }catch(\Exception $e){
-            return response()->json(['message' => 'An error occurred during login', 'error' => $e->getMessage()], 500);
-        }
+        $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => $user,
+            'token_type' => 'Bearer'
+        ]);
     }
+
     public function logout()
     {
         auth()->logout();

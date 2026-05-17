@@ -3,24 +3,38 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use app\Models\Task;
+use App\Models\Task;
+use App\Events\TaskCreated;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
     //
     public function create(){
-
         $task = Task::create([
             'title' => 'Task 1',
             'description' => 'This is the first task',
             'status' => 'pending',
+            'priority' => 'medium',
+            'user_id' => Auth::id(), 
         ]);
 
-        return response()->json(['message' => 'Task created successfully', 'task' => $task], 201);
+       // event(new TaskCreated($task));
+
+        return response()->json([
+            'message' => 'Task created successfully',
+            'task' => $task
+        ], 201);
     }
 
     public function readAll(){
-        $tasks = Task::paginate(10);
+        // $tasks = Task::paginate(10);
+        // at this point we can use cache to store the tasks for 60 seconds
+        $tasks = Cache::remember('tasks', 60, function () {
+            // return Task::all();
+            return Task::paginate(10);
+        });
+
         return response()->json(['tasks' => $tasks], 200);
     }
 

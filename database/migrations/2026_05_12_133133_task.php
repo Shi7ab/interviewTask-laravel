@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->enum('status', ['todo', 'in_progress', 'done'])->default('todo');
+            $table->enum('status', ['pending', 'in_progress', 'done'])->default('pending');
             $table->enum('priority', ['low', 'medium', 'high'])->default('medium');
             $table->string('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
