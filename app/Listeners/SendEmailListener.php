@@ -7,7 +7,7 @@ use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
-class SendEmailListener 
+class SendEmailListener
 {
     public function handle(TaskCreated $event)
     {

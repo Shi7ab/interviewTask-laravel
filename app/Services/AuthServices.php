@@ -16,6 +16,7 @@ class AuthService
             'password' => Hash::make($data['password']),
         ]);
     }
+    
 
     public function login(array $credentials)
     {
