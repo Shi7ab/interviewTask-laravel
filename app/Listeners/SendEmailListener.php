@@ -6,8 +6,11 @@ use App\Events\TaskCreated;
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
-class SendEmailListener
+class SendEmailListener implements ShouldQueue
+// class SendEmailListener
 {
     public function handle(TaskCreated $event)
     {

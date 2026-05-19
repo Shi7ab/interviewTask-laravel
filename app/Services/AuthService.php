@@ -16,7 +16,7 @@ class AuthService
             'password' => Hash::make($data['password']),
         ]);
     }
-    
+
 
     public function login(array $credentials)
     {
@@ -36,6 +36,7 @@ class AuthService
 
     public function logout()
     {
-        auth()->logout();
+       auth()->logout();
+       // auth()->user()->currentAccessToken()->delete();
     }
 }

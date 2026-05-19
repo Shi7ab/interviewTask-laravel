@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Reposotries;
 
-use App\Repositories\Interfaces\BaseRepositoryInterface;
+use App\Reposotries\Interfaces\BaseRepositoryInterface;
 
 class BaseRepository implements BaseRepositoryInterface
 {

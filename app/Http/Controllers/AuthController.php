@@ -13,7 +13,7 @@ class AuthController extends Controller
     {
         $this->authService = $authService;
     }
-
+    
     public function register(Request $request)
     {
         $user = $this->authService->register($request->all());
